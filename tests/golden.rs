@@ -27,7 +27,7 @@ fn round4(x: f64) -> f64 {
     (x * 10000.0).round() / 10000.0
 }
 
-/// Rust against Go's own output (sf8193/blackscholes v1.1.0), bit for bit.
+/// Rust against Go's own output (sf8193/blackscholes v1.7.0), bit for bit.
 /// Random rows may differ in the last bits if round4 agrees; the estimate-0 and fixed-vol rows
 /// must be bit-exact.
 #[test]
@@ -58,7 +58,7 @@ fn matches_go_oracle() {
     assert!(bad.is_empty(), "differ after round4: {bad:?}");
     assert_eq!(rows.len(), exact + r4);
     assert_eq!(
-        r4, 211,
+        r4, 188,
         "bit-exact count changed: libm or the arithmetic order moved"
     );
 }
@@ -89,7 +89,7 @@ struct GRow {
     rho: u64,
 }
 
-/// gamma, vega, theta and rho against Go v1.1.0: relative difference <= 1e-12 on every row.
+/// gamma, vega, theta and rho against Go v1.7.0: relative difference <= 1e-12 on every row.
 /// Not bit-exact: Go on amd64 uses an assembly `exp`, this crate uses `libm`.
 #[test]
 fn greeks_match_go_oracle() {

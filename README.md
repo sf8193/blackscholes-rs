@@ -1,14 +1,15 @@
 # blackscholes
 
 Black-Scholes price, implied volatility and greeks in Rust. It is a line-for-line port of
-Go `github.com/sf8193/blackscholes` v1.1.0. Price, implied vol and delta match Go v1.1.0 after Go's 4-decimal rounding; gamma, vega, theta and
+Go `github.com/sf8193/blackscholes` v1.7.0's math (the implied-vol solver stops at a 0.1-cent price
+match, v1.7.0's `priceScale`). Price, implied vol and delta match Go v1.7.0 after Go's 4-decimal rounding; gamma, vega, theta and
 rho agree within a relative 1e-12 (Go on amd64 uses an assembly exp; this crate uses libm).
 
 Functions: `norm_cdf`, `norm_density`, `w`, `price`, `implied_vol`, `delta`, `gamma`, `vega`,
 `theta`, `rho`. Only dependency: `libm`.
 
-Go v1.1.0 `GetTheta`/`GetRho` test lowercase `"call"` (`GetDelta` tests `"CALL"`); here `put: bool`
-means call or put as it should, and the oracle passes `"call"`/`"put"` to match.
+Go `GetTheta`/`GetRho` test `"CALL"` (v1.1.0 tested lowercase `"call"`); here `put: bool` means
+call or put, and the oracle passes `"CALL"`/`"PUT"`.
 
 ## Golden test
 
