@@ -111,16 +111,16 @@ type GRow struct {
 	ThetaBits, RhoBits  uint64
 }
 
-// greeks writes gamma/vega/theta/rho rows. v1.1.0 GetTheta/GetRho test lowercase "call",
-// so they get "call"/"put" here; the Rust API takes a bool.
+// greeks writes gamma/vega/theta/rho rows. v1.7.0 GetTheta/GetRho test "CALL" (v1.1.0 tested
+// lowercase "call"); the Rust API takes a bool.
 func greeks(path string) {
 	rng := rand.New(rand.NewSource(43))
 	var rows []GRow
 	add := func(s, k, t, v float64, put bool, scale int) {
 		const r = 0.0425
-		ct := "call"
+		ct := "CALL"
 		if put {
-			ct = "put"
+			ct = "PUT"
 		}
 		rows = append(rows, GRow{s, k, t, v, r, put, scale,
 			math.Float64bits(blackscholes.GetGamma(s, k, t, v, r)),

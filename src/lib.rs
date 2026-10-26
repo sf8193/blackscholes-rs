@@ -1,4 +1,4 @@
-//! Line-for-line port of Go `github.com/sf8193/blackscholes` v1.1.0
+//! Line-for-line port of Go `github.com/sf8193/blackscholes` v1.7.0
 //! (`GetImpliedVolatility`, `BlackScholes`, `GetDelta`, `StdNormCDF`, `GetW`, `StdNormDensity`,
 //! `GetGamma`, `GetVega`, `GetTheta`, `GetRho`).
 //!
@@ -32,14 +32,21 @@ pub fn price(s: f64, k: f64, t: f64, v: f64, r: f64, put: bool) -> f64 {
     }
 }
 
-/// `GetImpliedVolatility`: bisection, 100 iterations max, stops when cents (truncated) match.
+/// Go v1.7.0 `priceScale`: the solver stops when the model price matches the target to 0.001. One
+/// cent was too coarse for options worth a few cents (0DTE wings); a tenth of a cent is within a
+/// few ten-thousandths of delta of the exact solution at every strike and costs a handful more
+/// iterations.
+const PRICE_SCALE: f64 = 1000.0;
+
+/// `GetImpliedVolatility`: bisection, 100 iterations max, stops when tenths of a cent (truncated)
+/// match.
 pub fn implied_vol(cost: f64, s: f64, k: f64, t: f64, r: f64, put: bool, estimate: f64) -> f64 {
     let mut estimate = if estimate == 0.0 { 0.1 } else { estimate };
     let mut low = 0.0;
     let mut high = f64::INFINITY;
     for _ in 0..100 {
         let actual = price(s, k, t, estimate, r, put);
-        if (cost * 100.0) as i64 == (actual * 100.0) as i64 {
+        if (cost * PRICE_SCALE) as i64 == (actual * PRICE_SCALE) as i64 {
             break;
         } else if actual > cost {
             high = estimate;
